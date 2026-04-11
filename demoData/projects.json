@@ -1,0 +1,80 @@
+[
+  {
+    "_id": "69c3c86d95952fc1154704ad",
+    "companyId": "69c27503345ca0a04409b1ff",
+    "departmentId": "69c3b4e9001a024c85dfef66",
+    "name": "IT_Project003",
+    "description": "this is IT_Project003",
+    "status": "active",
+    "created_by": "69c27503345ca0a04409b201",
+    "completedAt": null,
+    "createdAt": "2026-03-25T11:35:09.235Z",
+    "updatedAt": "2026-03-25T11:35:09.235Z",
+    "__v": 0
+  },
+  {
+    "_id": "69c3c86a95952fc1154704ab",
+    "companyId": "69c27503345ca0a04409b1ff",
+    "departmentId": "69c3b4e9001a024c85dfef66",
+    "name": "IT_Project002",
+    "description": "this is IT_Project002",
+    "status": "active",
+    "created_by": "69c27503345ca0a04409b201",
+    "completedAt": null,
+    "createdAt": "2026-03-25T11:35:06.665Z",
+    "updatedAt": "2026-03-25T11:35:06.665Z",
+    "__v": 0
+  },
+  {
+    "_id": "69c3c86895952fc1154704a9",
+    "companyId": "69c27503345ca0a04409b1ff",
+    "departmentId": "69c3b4e9001a024c85dfef66",
+    "name": "IT_Project00",
+    "description": "this is IT_Project00",
+    "status": "active",
+    "created_by": "69c27503345ca0a04409b201",
+    "completedAt": null,
+    "createdAt": "2026-03-25T11:35:04.951Z",
+    "updatedAt": "2026-03-25T11:35:04.951Z",
+    "__v": 0
+  },
+  {
+    "_id": "69c3c84695952fc1154704a7",
+    "companyId": "69c27503345ca0a04409b1ff",
+    "departmentId": "69c3b4f3001a024c85dfef6a",
+    "name": "project003",
+    "description": "this is project003",
+    "status": "active",
+    "created_by": "69c27503345ca0a04409b201",
+    "completedAt": null,
+    "createdAt": "2026-03-25T11:34:30.196Z",
+    "updatedAt": "2026-03-25T11:34:30.196Z",
+    "__v": 0
+  },
+  {
+    "_id": "69c3c84195952fc1154704a5",
+    "companyId": "69c27503345ca0a04409b1ff",
+    "departmentId": "69c3b4f3001a024c85dfef6a",
+    "name": "project002",
+    "description": "this is project002",
+    "status": "active",
+    "created_by": "69c27503345ca0a04409b201",
+    "completedAt": null,
+    "createdAt": "2026-03-25T11:34:25.120Z",
+    "updatedAt": "2026-03-25T11:34:25.120Z",
+    "__v": 0
+  },
+  {
+    "_id": "69c3c82f95952fc1154704a3",
+    "companyId": "69c27503345ca0a04409b1ff",
+    "departmentId": "69c3b4f3001a024c85dfef6a",
+    "name": "project001",
+    "description": "this is project001",
+    "status": "active",
+    "created_by": "69c27503345ca0a04409b201",
+    "completedAt": null,
+    "createdAt": "2026-03-25T11:34:07.926Z",
+    "updatedAt": "2026-03-25T11:34:07.926Z",
+    "__v": 0
+  }
+]
