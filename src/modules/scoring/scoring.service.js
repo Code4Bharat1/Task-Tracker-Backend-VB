@@ -139,7 +139,8 @@ export const getLeaderboardService = async ({ companyId, departmentId, period })
 	// Build task stats per user
 	let dateFilter = {};
 	if (period && period !== "all") {
-		const days = period === "weekly" ? 7 : period === "monthly" ? 30 : period === "quarterly" ? 90 : 0;
+		const days =
+			period === "weekly" ? 7 : period === "monthly" ? 30 : period === "quarterly" ? 90 : 0;
 		if (days > 0) {
 			const since = new Date();
 			since.setDate(since.getDate() - days);
@@ -220,7 +221,8 @@ export const getLeaderboardService = async ({ companyId, departmentId, period })
 		.map((entry, idx) => ({ ...entry, rank: idx + 1 }));
 
 	const totalScore = leaderboard.reduce((sum, e) => sum + e.score, 0);
-	const departmentAverage = leaderboard.length > 0 ? Math.round((totalScore / leaderboard.length) * 10) / 10 : 0;
+	const departmentAverage =
+		leaderboard.length > 0 ? Math.round((totalScore / leaderboard.length) * 10) / 10 : 0;
 
 	return { data: leaderboard, departmentAverage };
 };

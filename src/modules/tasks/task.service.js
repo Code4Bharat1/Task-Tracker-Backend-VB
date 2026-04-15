@@ -147,7 +147,11 @@ export const updateTaskService = async ({ id, companyId, userId, data }) => {
 
 	// Score on completion
 	if (task.status === "DONE" && !task.scoreApplied) {
-		try { await scoreTaskCompletion(task); } catch { /* non-blocking */ }
+		try {
+			await scoreTaskCompletion(task);
+		} catch {
+			/* non-blocking */
+		}
 	}
 
 	return task;
@@ -210,7 +214,11 @@ export const advanceTaskStatusService = async ({ id, companyId }) => {
 
 	// Score on completion
 	if (task.status === "DONE" && !task.scoreApplied) {
-		try { await scoreTaskCompletion(task); } catch { /* non-blocking */ }
+		try {
+			await scoreTaskCompletion(task);
+		} catch {
+			/* non-blocking */
+		}
 	}
 
 	return task;
