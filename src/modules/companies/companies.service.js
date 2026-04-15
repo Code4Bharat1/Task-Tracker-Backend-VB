@@ -99,7 +99,7 @@ export const updateCompany = async (companyId, updateData) => {
 		throw error;
 	}
 
-	const ALLOWED = ["companyName", "status", "workingDays", "shiftStart", "shiftEnd", "logDeadlines"];
+	const ALLOWED = ["companyName", "status", "workingDays", "shiftStart", "shiftEnd", "logDeadlines", "defaultTaskDeadline", "missedTaskGracePeriod", "scoringRules"];
 	const data = {};
 	for (const key of ALLOWED) {
 		if (updateData[key] !== undefined) data[key] = updateData[key];

@@ -46,4 +46,28 @@ export const uploadProfilePic = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
 }).single("profilePic");
 
+// ─── Task attachment upload ───────────────────────────────────
+// Accepts images, PDFs, and documents — max 10 MB
+const ALLOWED_TASK_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+]);
+
+const taskFileFilter = (req, file, cb) => {
+  if (!ALLOWED_TASK_MIME_TYPES.has(file.mimetype)) {
+    return cb(customError("Only images, PDF, and DOCX files are allowed", 400), false);
+  }
+  cb(null, true);
+};
+
+export const uploadTaskFile = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: taskFileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+}).single("file");
+
 export default upload;

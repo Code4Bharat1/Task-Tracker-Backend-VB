@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
 import Task from "./task.model.js";
+import Company from "../companies/companies.model.js";
+import { scoreTaskCompletion } from "../scoring/scoring.service.js";
+import cloudinary from "../../config/cloudinary.js";
+import { Readable } from "stream";
 
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
@@ -10,6 +14,8 @@ const ALLOWED_UPDATE_FIELDS = [
 	"status",
 	"completionNote",
 	"deadline",
+	"startTime",
+	"endTime",
 ];
 
 // Create a task (Lead only)
@@ -20,6 +26,8 @@ export const createTaskService = async ({ companyId, userId, data }) => {
 		description,
 		priority,
 		deadline,
+		startTime,
+		endTime,
 		contributors = [],
 		reviewers = [],
 	} = data;
@@ -33,13 +41,36 @@ export const createTaskService = async ({ companyId, userId, data }) => {
 
 	const reviewerEntries = reviewers.filter((id) => isValidId(id)).map((id) => ({ userId: id }));
 
+	// If no deadline provided, use company default
+	let taskDeadline = deadline;
+	if (!taskDeadline) {
+		try {
+			const company = await Company.findById(companyId);
+			if (company?.defaultTaskDeadline) {
+				const [hh, mm] = company.defaultTaskDeadline.split(":").map(Number);
+				const now = new Date();
+				const todayDeadline = new Date(now);
+				todayDeadline.setHours(hh, mm, 0, 0);
+				// If today's deadline has passed, set for tomorrow
+				if (todayDeadline <= now) {
+					todayDeadline.setDate(todayDeadline.getDate() + 1);
+				}
+				taskDeadline = todayDeadline;
+			}
+		} catch {
+			// silently skip default deadline
+		}
+	}
+
 	return Task.create({
 		companyId,
 		projectId,
 		title,
 		description,
 		priority,
-		deadline,
+		deadline: taskDeadline,
+		startTime: startTime || null,
+		endTime: endTime || null,
 		contributors: contributorEntries,
 		reviewers: reviewerEntries,
 		created_by: userId,
@@ -113,6 +144,12 @@ export const updateTaskService = async ({ id, companyId, userId, data }) => {
 		runValidators: true,
 	});
 	if (!task) throw Object.assign(new Error("Task not found"), { statusCode: 404 });
+
+	// Score on completion
+	if (task.status === "DONE" && !task.scoreApplied) {
+		try { await scoreTaskCompletion(task); } catch { /* non-blocking */ }
+	}
+
 	return task;
 };
 
@@ -169,6 +206,62 @@ export const advanceTaskStatusService = async ({ id, companyId }) => {
 
 	task.status = STATUS_SEQUENCE[currentIndex + 1];
 	if (task.status === "DONE") task.completedAt = new Date();
+	await task.save();
+
+	// Score on completion
+	if (task.status === "DONE" && !task.scoreApplied) {
+		try { await scoreTaskCompletion(task); } catch { /* non-blocking */ }
+	}
+
+	return task;
+};
+
+// Upload an attachment to a task
+export const uploadTaskAttachmentService = async ({ id, companyId, file }) => {
+	if (!isValidId(id)) throw Object.assign(new Error("Invalid task ID"), { statusCode: 400 });
+	if (!file) throw Object.assign(new Error("No file provided"), { statusCode: 400 });
+
+	const task = await Task.findOne({ _id: id, companyId });
+	if (!task) throw Object.assign(new Error("Task not found"), { statusCode: 404 });
+
+	if ((task.attachments || []).length >= 5) {
+		throw Object.assign(new Error("Maximum 5 attachments per task"), { statusCode: 400 });
+	}
+
+	const result = await new Promise((resolve, reject) => {
+		const stream = cloudinary.uploader.upload_stream(
+			{
+				folder: `tasks/${companyId}/${id}`,
+				resource_type: "auto",
+			},
+			(err, result) => (err ? reject(err) : resolve(result))
+		);
+		Readable.from(file.buffer).pipe(stream);
+	});
+
+	task.attachments.push({
+		url: result.secure_url,
+		publicId: result.public_id,
+		fileName: file.originalname,
+		fileType: file.mimetype,
+	});
+
+	await task.save();
+	return task;
+};
+
+// Delete an attachment from a task
+export const deleteTaskAttachmentService = async ({ id, companyId, publicId }) => {
+	if (!isValidId(id)) throw Object.assign(new Error("Invalid task ID"), { statusCode: 400 });
+
+	const task = await Task.findOne({ _id: id, companyId });
+	if (!task) throw Object.assign(new Error("Task not found"), { statusCode: 404 });
+
+	const idx = task.attachments.findIndex((a) => a.publicId === publicId);
+	if (idx === -1) throw Object.assign(new Error("Attachment not found"), { statusCode: 404 });
+
+	await cloudinary.uploader.destroy(publicId);
+	task.attachments.splice(idx, 1);
 	await task.save();
 	return task;
 };

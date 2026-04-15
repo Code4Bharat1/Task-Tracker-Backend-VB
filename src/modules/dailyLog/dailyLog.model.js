@@ -12,6 +12,19 @@ const entrySchema = new mongoose.Schema(
 			ref: "Task",
 			default: null,
 		},
+		logType: {
+			type: String,
+			enum: ["task_work", "meeting", "ad_hoc", "review"],
+			default: "task_work",
+		},
+		startTime: {
+			type: String, // "HH:MM" format
+			default: null,
+		},
+		endTime: {
+			type: String, // "HH:MM" format
+			default: null,
+		},
 		description: {
 			type: String,
 			required: true,

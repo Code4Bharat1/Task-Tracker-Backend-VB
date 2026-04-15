@@ -6,6 +6,8 @@ import {
 	assignTaskService,
 	deleteTaskService,
 	advanceTaskStatusService,
+	uploadTaskAttachmentService,
+	deleteTaskAttachmentService,
 } from "./task.service.js";
 
 export const createTask = async (req, res, next) => {
@@ -90,6 +92,35 @@ export const advanceTask = async (req, res, next) => {
 	try {
 		const { companyId } = req;
 		const task = await advanceTaskStatusService({ id: req.params.id, companyId });
+		res.status(200).json({ task });
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const uploadTaskAttachment = async (req, res, next) => {
+	try {
+		const { companyId } = req;
+		const task = await uploadTaskAttachmentService({
+			id: req.params.id,
+			companyId,
+			file: req.file,
+		});
+		res.status(200).json({ task });
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const deleteTaskAttachment = async (req, res, next) => {
+	try {
+		const { companyId } = req;
+		const { publicId } = req.body;
+		const task = await deleteTaskAttachmentService({
+			id: req.params.id,
+			companyId,
+			publicId,
+		});
 		res.status(200).json({ task });
 	} catch (err) {
 		next(err);

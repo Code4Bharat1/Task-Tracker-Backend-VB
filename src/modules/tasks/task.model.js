@@ -71,6 +71,28 @@ const taskSchema = new mongoose.Schema(
 			type: Date,
 			default: null,
 		},
+		startTime: {
+			type: Date,
+			default: null,
+		},
+		endTime: {
+			type: Date,
+			default: null,
+		},
+		attachments: [
+			{
+				url: { type: String, required: true },
+				publicId: { type: String, required: true },
+				fileName: { type: String, default: "" },
+				fileType: { type: String, default: "" },
+				uploadedAt: { type: Date, default: Date.now },
+				_id: false,
+			},
+		],
+		scoreApplied: {
+			type: Boolean,
+			default: false,
+		},
 		completedAt: {
 			type: Date,
 			default: null,
@@ -90,5 +112,6 @@ const taskSchema = new mongoose.Schema(
 taskSchema.index({ companyId: 1, projectId: 1, status: 1 });
 taskSchema.index({ companyId: 1, "contributors.userId": 1 });
 taskSchema.index({ companyId: 1, "reviewers.userId": 1 });
+taskSchema.index({ companyId: 1, scoreApplied: 1, status: 1, deadline: 1 });
 
 export default mongoose.model("Task", taskSchema);

@@ -32,6 +32,22 @@ const companySchema = new Schema(
 			type: [String], // ["HH:MM"] 24h format
 			default: ["22:00"],
 		},
+		defaultTaskDeadline: {
+			type: String, // "HH:MM" 24h format — default deadline time for new tasks
+			default: "20:00",
+		},
+		missedTaskGracePeriod: {
+			type: Number, // hours after deadline before task is considered "missed"
+			default: 24,
+		},
+		scoringRules: {
+			taskOnTime: { type: Number, default: 2 },
+			taskEarly: { type: Number, default: 3 },
+			taskOverdue: { type: Number, default: -1 },
+			taskMissed: { type: Number, default: -5 },
+			dailyLogOnTime: { type: Number, default: 1 },
+			dailyLogMissed: { type: Number, default: -2 },
+		},
 	},
 	{
 		timestamps: {

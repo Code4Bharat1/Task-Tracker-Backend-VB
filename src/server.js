@@ -21,6 +21,8 @@ import ktDocumentRoutes from "./modules/ktDocuments/ktDocument.routes.js";
 import activityLogRoutes from "./modules/activityLogs/activityLog.routes.js";
 import sessionRoutes from "./modules/session/session.routes.js";
 import featureFlagRoutes from "./modules/featureFlags/featureFlag.routes.js";
+import leaderboardRoutes from "./modules/scoring/scoring.routes.js";
+import { startDeadlineChecker } from "./jobs/deadlineChecker.js";
 
 const app = express();
 app.use(helmet());
@@ -49,6 +51,10 @@ app.use("/api/v1/kt-documents", ktDocumentRoutes);
 app.use("/api/v1/activity-logs", activityLogRoutes);
 app.use("/api/v1/sessions", sessionRoutes);
 app.use("/api/v1/feature-flags", featureFlagRoutes);
+app.use("/api/v1/leaderboard", leaderboardRoutes);
+
+// Start background jobs
+startDeadlineChecker();
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, "0.0.0.0", () => {

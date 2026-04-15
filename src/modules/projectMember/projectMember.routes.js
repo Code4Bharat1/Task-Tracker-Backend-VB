@@ -6,10 +6,10 @@ import { createProjectMember, deleteProjectMember, getAllProjectMembers, getSing
 
 const router = Router();
 
-router.post("/", verifyAccessToken, verifyRole("department_head"), createProjectMember);
-router.get("/", verifyAccessToken, verifyRole("department_head"), getAllProjectMembers);
-router.get("/:id", verifyAccessToken, verifyRole("department_head"), getSingleProjectMember);
-router.put("/:id", verifyAccessToken, verifyRole("department_head"), updateProjectMember);
-router.delete("/:id", verifyAccessToken, verifyRole("department_head"), deleteProjectMember);
+router.post("/", verifyAccessToken, verifyRole("department_head|project_manager"), createProjectMember);
+router.get("/", verifyAccessToken, verifyRole("department_head|project_manager"), getAllProjectMembers);
+router.get("/:id", verifyAccessToken, verifyRole("department_head|project_manager"), getSingleProjectMember);
+router.put("/:id", verifyAccessToken, verifyRole("department_head|project_manager"), updateProjectMember);
+router.delete("/:id", verifyAccessToken, verifyRole("department_head|project_manager"), deleteProjectMember);
 
 export default router;

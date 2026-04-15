@@ -9,7 +9,10 @@ import {
 	assignTask,
 	deleteTask,
 	advanceTask,
+	uploadTaskAttachment,
+	deleteTaskAttachment,
 } from "./task.controller.js";
+import { uploadTaskFile } from "../../middlewares/upload.js";
 
 const router = Router();
 
@@ -62,6 +65,23 @@ router.delete(
 	verifyAccessToken,
 	verifyRole(["admin", "department_head", "project_manager"]),
 	deleteTask
+);
+
+// Upload an attachment to a task
+router.post(
+	"/:id/attachments",
+	verifyAccessToken,
+	verifyRole(["admin", "department_head", "project_manager", "employee"]),
+	uploadTaskFile,
+	uploadTaskAttachment
+);
+
+// Delete an attachment from a task
+router.delete(
+	"/:id/attachments",
+	verifyAccessToken,
+	verifyRole(["admin", "department_head", "project_manager", "employee"]),
+	deleteTaskAttachment
 );
 
 export default router;
