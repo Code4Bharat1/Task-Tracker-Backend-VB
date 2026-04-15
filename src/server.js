@@ -26,7 +26,7 @@ import { startDeadlineChecker } from "./jobs/deadlineChecker.js";
 
 const app = express();
 app.use(helmet());
-app.use(cors({ origin: "https://task.nexcorealliance.com/", credentials: true }));
+app.use(cors({ origin: ["https://task.nexcorealliance.com", "http://localhost:3000"], credentials: true }));
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
