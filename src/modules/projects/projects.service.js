@@ -1,6 +1,6 @@
 import Project from "./projects.model.js";
 import mongoose from "mongoose";
-import Module from "../modules/module.model.js";
+import Task from "../tasks/task.model.js";
 import { Readable } from "stream";
 import cloudinary from "../../config/cloudinary.js";
 
@@ -97,11 +97,11 @@ export const getProjectsService = async ({
 		};
 	});
 
-	// Aggregate modules counts for the returned projects
+	// Aggregate task counts for the returned projects
 	try {
 		const projectIds = projects.map((p) => p._id).filter(Boolean);
 		if (projectIds.length > 0) {
-			const agg = await Module.aggregate([
+			const agg = await Task.aggregate([
 				{ $match: { projectId: { $in: projectIds } } },
 				{
 					$group: {
@@ -109,7 +109,7 @@ export const getProjectsService = async ({
 						total: { $sum: 1 },
 						completed: {
 							$sum: {
-								$cond: [{ $in: ["$status", ["APPROVED", "DEPLOYED"]] }, 1, 0],
+								$cond: [{ $eq: ["$status", "DONE"] }, 1, 0],
 							},
 						},
 					},
@@ -118,16 +118,16 @@ export const getProjectsService = async ({
 
 			const map = Object.fromEntries(agg.map((a) => [String(a._id), a]));
 			projects.forEach((p) => {
-				const m = map[String(p._id)];
-				p.modulesTotal = m?.total ?? 0;
-				p.modulesCompleted = m?.completed ?? 0;
+				const t = map[String(p._id)];
+				p.tasksTotal = t?.total ?? 0;
+				p.tasksCompleted = t?.completed ?? 0;
 			});
 		}
 	} catch (e) {
-		// If aggregation fails, fall back to zeroed module counts
+		// If aggregation fails, fall back to zeroed task counts
 		projects.forEach((p) => {
-			p.modulesTotal = p.modulesTotal ?? 0;
-			p.modulesCompleted = p.modulesCompleted ?? 0;
+			p.tasksTotal = p.tasksTotal ?? 0;
+			p.tasksCompleted = p.tasksCompleted ?? 0;
 		});
 	}
 
