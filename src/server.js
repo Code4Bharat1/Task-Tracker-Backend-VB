@@ -22,11 +22,14 @@ import activityLogRoutes from "./modules/activityLogs/activityLog.routes.js";
 import sessionRoutes from "./modules/session/session.routes.js";
 import featureFlagRoutes from "./modules/featureFlags/featureFlag.routes.js";
 import leaderboardRoutes from "./modules/scoring/scoring.routes.js";
+import reportRoutes from "./modules/reports/reports.routes.js";
 import { startDeadlineChecker } from "./jobs/deadlineChecker.js";
 
 const app = express();
 app.use(helmet());
-app.use(cors({ origin: ["https://task.nexcorealliance.com", "http://localhost:3000"], credentials: true }));
+app.use(
+	cors({ origin: ["https://task.nexcorealliance.com", "http://localhost:3000"], credentials: true })
+);
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
@@ -52,6 +55,7 @@ app.use("/api/v1/activity-logs", activityLogRoutes);
 app.use("/api/v1/sessions", sessionRoutes);
 app.use("/api/v1/feature-flags", featureFlagRoutes);
 app.use("/api/v1/leaderboard", leaderboardRoutes);
+app.use("/api/v1/reports", reportRoutes);
 
 // Start background jobs
 startDeadlineChecker();
