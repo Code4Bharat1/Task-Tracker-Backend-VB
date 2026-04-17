@@ -12,31 +12,29 @@ export default function verifyPermission(resource, action) {
 		try {
 			const role = req.role;
 
-			// Admin, super_admin, and lead always have full access
-			if (role === "admin" || role === "super_admin" || role === "lead") return next();
+			// Admin and super_admin always have full access
+			if (role === "admin" || role === "super_admin") return next();
 
 			const company = await Company.findById(req.companyId).select("rolePermissions").lean();
 
-			// If no permissions configured, fall back to allowing access
+			// If no permissions configured at all, fall back to allowing access
 			if (!company?.rolePermissions) return next();
 
-			const rolePerms = company.rolePermissions[role];
+			// Map role to the correct key in rolePermissions
+			let roleKey;
+			if (role === "department_head") roleKey = "department_head";
+			else if (role === "lead") roleKey = "lead";
+			else roleKey = "employee";
 
-			if (!rolePerms) {
-				return res.status(403).json({
-					error: "Access Denied",
-					message: `Role '${role}' has no configured permissions`,
-				});
-			}
+			const rolePerms = company.rolePermissions[roleKey];
+
+			// If this role has no saved permissions yet, fall back to allowing access
+			if (!rolePerms) return next();
 
 			const resourcePerms = rolePerms[resource];
 
-			if (!resourcePerms) {
-				return res.status(403).json({
-					error: "Access Denied",
-					message: `No permissions configured for '${resource}'`,
-				});
-			}
+			// If this resource has no saved permissions yet, fall back to allowing access
+			if (!resourcePerms) return next();
 
 			if (!resourcePerms[action]) {
 				return res.status(403).json({

@@ -48,6 +48,19 @@ export const deleteDailyLog = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+export const getTodayLog = async (req, res, next) => {
+  try {
+    const { companyId, userId } = req;
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    const DailyLog = (await import("./dailyLog.model.js")).default;
+    const log = await DailyLog.findOne({ companyId, userId, logDate: today })
+      .populate("entries.projectId", "name")
+      .populate("entries.taskId", "title");
+    res.status(200).json({ log: log ?? null });
+  } catch (err) { next(err); }
+};
+
 export const uploadEntryScreenshot = async (req, res, next) => {
   try {
     const { companyId, userId: requesterId, role } = req;

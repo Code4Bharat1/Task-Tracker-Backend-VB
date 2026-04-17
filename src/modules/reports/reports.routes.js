@@ -12,31 +12,16 @@ import {
 
 const router = Router();
 
-router.post(
-	"/",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "project_manager", "employee"]),
-	createReport
-);
-router.get(
-	"/",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "project_manager"]),
-	getReports
-);
+router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), createReport);
+
+// /my-reports MUST be before /:id
 router.get("/my-reports", verifyAccessToken, getMyReports);
+
+router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), getReports);
 router.get("/:id", verifyAccessToken, getReportById);
-router.patch(
-	"/:id",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "project_manager"]),
-	updateReport
-);
-router.delete(
-	"/:id",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "project_manager"]),
-	deleteReport
-);
+
+// Any authenticated user can update/delete their own report (controller enforces ownership)
+router.patch("/:id", verifyAccessToken, updateReport);
+router.delete("/:id", verifyAccessToken, deleteReport);
 
 export default router;
