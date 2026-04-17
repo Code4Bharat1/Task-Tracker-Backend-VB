@@ -70,4 +70,11 @@ export const uploadTaskFile = multer({
 	limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
 }).single("file");
 
+// ─── Generic image upload (screenshots, etc.) ─────────────────────────────────
+export const uploadImage = multer({
+	storage: multer.memoryStorage(),
+	fileFilter: imageFileFilter,
+	limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+}).single("screenshot");
+
 export default upload;

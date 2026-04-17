@@ -353,85 +353,85 @@ export const deleteProjectService = async ({ id, companyId, departmentId, role }
 };
 
 // ─── SRS Cloudinary helpers ───────────────────────────────────────────────────
-// TO-DO
-// function uploadSrsToCloudinary(buffer, originalName, folder) {
-// 	return new Promise((resolve, reject) => {
-// 		const stream = cloudinary.uploader.upload_stream(
-// 			{
-// 				folder,
-// 				resource_type: "raw",
-// 				public_id: originalName,
-// 				use_filename: true,
-// 				unique_filename: true,
-// 				overwrite: false,
-// 			},
-// 			(error, result) => {
-// 				if (error) return reject(error);
-// 				resolve(result);
-// 			}
-// 		);
-// 		Readable.from(buffer).pipe(stream);
-// 	});
-// }
 
-// async function deleteSrsFromCloudinary(publicId) {
-// 	try {
-// 		await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
-// 	} catch {
-// 		// non-fatal
-// 	}
-// }
+function uploadSrsToCloudinary(buffer, originalName, folder) {
+	return new Promise((resolve, reject) => {
+		const stream = cloudinary.uploader.upload_stream(
+			{
+				folder,
+				resource_type: "raw",
+				public_id: originalName,
+				use_filename: true,
+				unique_filename: true,
+				overwrite: false,
+			},
+			(error, result) => {
+				if (error) return reject(error);
+				resolve(result);
+			}
+		);
+		Readable.from(buffer).pipe(stream);
+	});
+}
 
-// // ─── SRS service functions ────────────────────────────────────────────────────
+async function deleteSrsFromCloudinary(publicId) {
+	try {
+		await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
+	} catch {
+		// non-fatal
+	}
+}
 
-// export const uploadSrsService = async ({ id, companyId, file }) => {
-// 	if (!isValidId(id)) throw Object.assign(new Error("Invalid project ID"), { statusCode: 400 });
+// ─── SRS service functions ────────────────────────────────────────────────────
 
-// 	const project = await Project.findOne({ _id: id, companyId });
-// 	if (!project) throw Object.assign(new Error("Project not found"), { statusCode: 404 });
+export const uploadSrsService = async ({ id, companyId, file }) => {
+	if (!isValidId(id)) throw Object.assign(new Error("Invalid project ID"), { statusCode: 400 });
 
-// 	// Delete old SRS if exists
-// 	if (project.srsDocument?.publicId) {
-// 		await deleteSrsFromCloudinary(project.srsDocument.publicId);
-// 	}
+	const project = await Project.findOne({ _id: id, companyId });
+	if (!project) throw Object.assign(new Error("Project not found"), { statusCode: 404 });
 
-// 	const result = await uploadSrsToCloudinary(
-// 		file.buffer,
-// 		file.originalname,
-// 		`srs-documents/${companyId}`
-// 	);
+	// Delete old SRS if exists
+	if (project.srsDocument?.publicId) {
+		await deleteSrsFromCloudinary(project.srsDocument.publicId);
+	}
 
-// 	return Project.findByIdAndUpdate(
-// 		id,
-// 		{ srsDocument: { url: result.secure_url, publicId: result.public_id } },
-// 		{ new: true }
-// 	).select("-__v");
-// };
+	const result = await uploadSrsToCloudinary(
+		file.buffer,
+		file.originalname,
+		`srs-documents/${companyId}`
+	);
 
-// export const getSrsService = async ({ id, companyId }) => {
-// 	if (!isValidId(id)) throw Object.assign(new Error("Invalid project ID"), { statusCode: 400 });
+	return Project.findByIdAndUpdate(
+		id,
+		{ srsDocument: { url: result.secure_url, publicId: result.public_id } },
+		{ new: true }
+	).select("-__v");
+};
 
-// 	const project = await Project.findOne({ _id: id, companyId }).select("srsDocument");
-// 	if (!project) throw Object.assign(new Error("Project not found"), { statusCode: 404 });
+export const getSrsService = async ({ id, companyId }) => {
+	if (!isValidId(id)) throw Object.assign(new Error("Invalid project ID"), { statusCode: 400 });
 
-// 	return project.srsDocument;
-// };
+	const project = await Project.findOne({ _id: id, companyId }).select("srsDocument");
+	if (!project) throw Object.assign(new Error("Project not found"), { statusCode: 404 });
 
-// export const deleteSrsService = async ({ id, companyId }) => {
-// 	if (!isValidId(id)) throw Object.assign(new Error("Invalid project ID"), { statusCode: 400 });
+	return project.srsDocument;
+};
 
-// 	const project = await Project.findOne({ _id: id, companyId });
-// 	if (!project) throw Object.assign(new Error("Project not found"), { statusCode: 404 });
+export const deleteSrsService = async ({ id, companyId }) => {
+	if (!isValidId(id)) throw Object.assign(new Error("Invalid project ID"), { statusCode: 400 });
 
-// 	if (!project.srsDocument?.publicId) {
-// 		throw Object.assign(new Error("No SRS document to delete"), { statusCode: 404 });
-// 	}
+	const project = await Project.findOne({ _id: id, companyId });
+	if (!project) throw Object.assign(new Error("Project not found"), { statusCode: 404 });
 
-// 	await deleteSrsFromCloudinary(project.srsDocument.publicId);
+	if (!project.srsDocument?.publicId) {
+		throw Object.assign(new Error("No SRS document to delete"), { statusCode: 404 });
+	}
 
-// 	return Project.findByIdAndUpdate(
-// 		id,
-// 		{ srsDocument: { url: null, publicId: null } },
-// 		{ new: true }
-// 	).select("-__v");
-// };
+	await deleteSrsFromCloudinary(project.srsDocument.publicId);
+
+	return Project.findByIdAndUpdate(
+		id,
+		{ srsDocument: { url: null, publicId: null } },
+		{ new: true }
+	).select("-__v");
+};

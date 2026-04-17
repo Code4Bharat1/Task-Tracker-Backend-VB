@@ -37,8 +37,8 @@ export const createBug = async (req, res, next) => {
 export const getBugs = async (req, res, next) => {
   try {
     const { companyId, role, departmentId, userId } = req;
-    const { projectId, moduleId, status, severity, assignedTo, reportedBy, page, limit } = req.query;
-    const result = await getBugsService({ companyId, role, departmentId, userId, projectId, moduleId, status, severity, assignedTo, reportedBy, page, limit });
+    const { projectId, moduleId, status, severity, assignedTo, reportedBy, assignedToMe, reportedByMe, page, limit } = req.query;
+    const result = await getBugsService({ companyId, role, departmentId, userId, projectId, moduleId, status, severity, assignedTo, reportedBy, assignedToMe, reportedByMe, requesterId: userId, page, limit });
     res.status(200).json({ bugs: result.data, pagination: result.pagination });
   } catch (err) { next(err); }
 };

@@ -182,9 +182,21 @@ export const changePassword = async (userId, newPassword) => {
 };
 
 export const getMe = async (userId) => {
-	const user = await User.findById(userId).select("name email globalRole");
+	const user = await User.findById(userId).select("-passwordHash -googleSubId -mustChangePassword");
 	if (!user) throw customError("User not found", 404);
-	return { id: user._id, name: user.name, email: user.email, role: user.globalRole };
+	return {
+		_id: user._id,
+		id: user._id,
+		name: user.name,
+		email: user.email,
+		role: user.globalRole,
+		globalRole: user.globalRole,
+		companyId: user.companyId,
+		departmentId: user.departmentId,
+		profilePic: user.profilePic,
+		isActive: user.isActive,
+		behaviourScore: user.behaviourScore,
+	};
 };
 
 export const refreshAccessToken = async (refreshToken) => {

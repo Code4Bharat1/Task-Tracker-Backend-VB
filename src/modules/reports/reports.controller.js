@@ -2,8 +2,12 @@ import Report from "./reports.model.js";
 
 export async function createReport(req, res) {
 	try {
-		const { types, projectId, date, notes } = req.body;
-		const report = await Report.create({ types, projectId, date, notes, createdBy: req.user._id });
+		const { types, projectId, date, notes, clientResponse, weeklyIncluded, monthlyIncluded } = req.body;
+		const report = await Report.create({
+			types, projectId, date, notes, clientResponse,
+			weeklyIncluded: !!weeklyIncluded, monthlyIncluded: !!monthlyIncluded,
+			createdBy: req.user._id,
+		});
 		res.status(201).json({ success: true, data: report });
 	} catch (err) {
 		res.status(500).json({ success: false, message: err.message });
@@ -31,10 +35,11 @@ export async function getReportById(req, res) {
 
 export async function updateReport(req, res) {
 	try {
-		const { types, projectId, date, notes } = req.body;
+		const { types, projectId, date, notes, clientResponse, weeklyIncluded, monthlyIncluded } = req.body;
 		const report = await Report.findByIdAndUpdate(
 			req.params.id,
-			{ types, projectId, date, notes },
+			{ types, projectId, date, notes, clientResponse,
+			  weeklyIncluded: !!weeklyIncluded, monthlyIncluded: !!monthlyIncluded },
 			{ new: true }
 		).lean();
 		res.json({ success: true, data: report });

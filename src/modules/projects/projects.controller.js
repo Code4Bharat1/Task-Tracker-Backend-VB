@@ -7,9 +7,9 @@ import {
 	updateProjectService,
 	updateTestingPhaseService,
 	deleteProjectService,
-	// uploadSrsService,
-	// getSrsService,
-	// deleteSrsService,
+	uploadSrsService,
+	getSrsService,
+	deleteSrsService,
 } from "./projects.service.js";
 import customError from "../../utils/error.js";
 
@@ -165,37 +165,37 @@ export const updateTestingPhase = async (req, res, next) => {
 };
 
 // ─── SRS handlers ─────────────────────────────────────────────────────────────
-// TO-DO
-// export const uploadSrs = async (req, res, next) => {
-// 	try {
-// 		if (!req.file) return next(customError("SRS file is required", 400));
-// 		const { companyId } = req;
-// 		const { id } = req.params;
-// 		const project = await uploadSrsService({ id, companyId, file: req.file });
-// 		res.status(200).json({ project });
-// 	} catch (err) {
-// 		next(err);
-// 	}
-// };
 
-// export const getSrs = async (req, res, next) => {
-// 	try {
-// 		const { companyId } = req;
-// 		const { id } = req.params;
-// 		const srsDocument = await getSrsService({ id, companyId });
-// 		res.status(200).json({ srsDocument });
-// 	} catch (err) {
-// 		next(err);
-// 	}
-// };
+export const uploadSrs = async (req, res, next) => {
+	try {
+		if (!req.file) return next(customError("SRS file is required", 400));
+		const { companyId } = req;
+		const { id } = req.params;
+		const project = await uploadSrsService({ id, companyId, file: req.file });
+		res.status(200).json({ project });
+	} catch (err) {
+		next(err);
+	}
+};
 
-// export const deleteSrs = async (req, res, next) => {
-// 	try {
-// 		const { companyId } = req;
-// 		const { id } = req.params;
-// 		const project = await deleteSrsService({ id, companyId });
-// 		res.status(200).json({ project });
-// 	} catch (err) {
-// 		next(err);
-// 	}
-// };
+export const getSrs = async (req, res, next) => {
+	try {
+		const { companyId } = req;
+		const { id } = req.params;
+		const srsDocument = await getSrsService({ id, companyId });
+		res.status(200).json({ srsDocument });
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const deleteSrs = async (req, res, next) => {
+	try {
+		const { companyId } = req;
+		const { id } = req.params;
+		const project = await deleteSrsService({ id, companyId });
+		res.status(200).json({ project });
+	} catch (err) {
+		next(err);
+	}
+};

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import verifyAccessToken from "../../middlewares/verifyAccessToken.middleware.js";
 import verifyRole from "../../middlewares/verifyRole.middleware.js";
+import verifyPermission from "../../middlewares/verifyPermission.middleware.js";
 import {
 	createTask,
 	getTasks,
@@ -17,80 +18,34 @@ import { uploadTaskFile } from "../../middlewares/upload.js";
 
 const router = Router();
 
-// Create a task — Lead only (admin, department_head, employee)
-router.post(
-	"/",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "employee"]),
-	createTask
-);
+// Create a task
+router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "create"), createTask);
 
-// Get all tasks — all authenticated roles
-router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "employee"]), getTasks);
+// Get all tasks
+router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "read"), getTasks);
 
 // Get a single task by ID
-router.get(
-	"/:id",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "employee"]),
-	getTaskById
-);
+router.get("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "read"), getTaskById);
 
 // Advance task to next status
-router.patch(
-	"/:id/advance",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "employee"]),
-	advanceTask
-);
+router.patch("/:id/advance", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), advanceTask);
 
 // Start tester review timing
-router.patch(
-	"/:id/start-review",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "employee"]),
-	startTesterReview
-);
+router.patch("/:id/start-review", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), startTesterReview);
 
-// Assign contributors / reviewers — Lead only
-router.patch(
-	"/:id/assign",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "employee"]),
-	assignTask
-);
+// Assign contributors / reviewers
+router.patch("/:id/assign", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), assignTask);
 
-// Update task fields — Lead can update all fields; employees can update status/completionNote
-router.patch(
-	"/:id",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "employee"]),
-	updateTask
-);
+// Update task fields
+router.patch("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), updateTask);
 
-// Delete a task — Lead only
-router.delete(
-	"/:id",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "employee"]),
-	deleteTask
-);
+// Delete a task
+router.delete("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), verifyPermission("tasks", "delete"), deleteTask);
 
 // Upload an attachment to a task
-router.post(
-	"/:id/attachments",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "employee"]),
-	uploadTaskFile,
-	uploadTaskAttachment
-);
+router.post("/:id/attachments", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), uploadTaskFile, uploadTaskAttachment);
 
 // Delete an attachment from a task
-router.delete(
-	"/:id/attachments",
-	verifyAccessToken,
-	verifyRole(["admin", "department_head", "employee"]),
-	deleteTaskAttachment
-);
+router.delete("/:id/attachments", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), deleteTaskAttachment);
 
 export default router;

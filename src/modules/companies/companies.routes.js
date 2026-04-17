@@ -5,17 +5,23 @@ import {
   getCompanyByIdController,
   registerCompanyController,
   updateCompanyController,
+  getRolePermissionsController,
+  updateRolePermissionsController,
 } from "./companies.controller.js";
+import verifyAccessToken from "../../middlewares/verifyAccessToken.middleware.js";
+import verifyRole from "../../middlewares/verifyRole.middleware.js";
 
 const router = Router();
 
-// All company routes are super_admin only
-// router.use(verifyAccessToken, verifyRole("super_admin"));
+router.post("/", registerCompanyController);
+router.get("/", getCompaniesController);
 
-router.post("/", registerCompanyController);              // CREATE company + admin
-router.get("/", getCompaniesController);                  // GET all companies (paginated)
-router.get("/:id", getCompanyByIdController);             // GET company by ID
-router.patch("/:companyId", updateCompanyController);     // UPDATE company (name, status, workingDays, shiftStart, shiftEnd)
-router.delete("/:companyId", deleteCompanyController);    // DELETE company
+// Role permissions — must be BEFORE /:id to avoid "permissions" being treated as an ID
+router.get("/permissions/roles", verifyAccessToken, verifyRole("admin"), getRolePermissionsController);
+router.patch("/permissions/roles", verifyAccessToken, verifyRole("admin"), updateRolePermissionsController);
+
+router.get("/:id", getCompanyByIdController);
+router.patch("/:companyId", updateCompanyController);
+router.delete("/:companyId", deleteCompanyController);
 
 export default router;

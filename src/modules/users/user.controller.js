@@ -24,8 +24,8 @@ export const createUser = async (req, res, next) => {
 		// Role enforcement: department_head can only create employees
 		// admin can create department_head or employee
 		const allowedRolesByCreator = {
-			department_head: ["employee"],
-			admin: ["department_head", "employee"],
+			department_head: ["employee", "lead"],
+			admin: ["department_head", "lead", "employee"],
 		};
 
 		if (!allowedRolesByCreator[reqRole]?.includes(globalRole)) {
@@ -164,8 +164,7 @@ export const getAllUsers = async (req, res, next) => {
 };
 
 // ─── Profile pic handlers ─────────────────────────────────────────────────────
-// TO-DO
-/*
+
 export const uploadProfilePic = async (req, res, next) => {
 	try {
 		if (!req.file) return next(customError("Image file is required", 400));
@@ -199,4 +198,3 @@ export const deleteProfilePic = async (req, res, next) => {
 		next(error);
 	}
 };
-*/
