@@ -2,18 +2,31 @@ import Department from "./departments.model.js";
 import { createNewDepartmentAndDepartmentHead, geetOneDepartment, getAllDepartments, getAllMembersOfDepartment } from "./department.service.js";
 
 export const createDepartment = async (req, res) => {
-	const { departmentName, name: userName, email: userEmail } = req.body;
+	const { departmentName, name: userName, email: userEmail, headId } = req.body;
 	if (!departmentName) return res.status(400).json({ error: "Department name is required" });
-	if (!userName || !userEmail) return res.status(400).json({ error: "Name and email are required" });
 
 	const companyId = req.companyId;
 	if (!companyId) return res.status(400).json({ error: "Missing company context (are you authenticated?)" });
+
 	try {
+		// Case 1: create department + new head user
+		if (userName && userEmail) {
+			const departmentData = await createNewDepartmentAndDepartmentHead(departmentName, userName, userEmail, undefined, companyId);
+			return res.status(201).json(departmentData);
+		}
 
-		// Create the department
-		const departmentData = await createNewDepartmentAndDepartmentHead(departmentName, userName, userEmail, undefined, companyId);
+		// Case 2: create department only, then optionally assign existing user as head
+		const department = await Department.create({ companyId, departmentName });
 
-		res.status(201).json(departmentData);
+		if (headId) {
+			const User = (await import("../users/user.model.js")).default;
+			await User.findByIdAndUpdate(headId, {
+				globalRole: "department_head",
+				departmentId: department._id,
+			});
+		}
+
+		return res.status(201).json({ departments: department, user: null });
 	} catch (err) {
 		res.status(400).json({ error: err.message });
 	}

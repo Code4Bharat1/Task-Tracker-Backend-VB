@@ -47,8 +47,8 @@ const projectSchema = new mongoose.Schema(
 		},
 		status: {
 			type: String,
-			enum: ["PLANNING", "IN_PROGRESS", "CODE_REVIEW", "QA_TESTING", "APPROVED", "DEPLOYED"],
-			default: "PLANNING",
+			enum: ["IN_PROGRESS", "COMPLETED"],
+			default: "IN_PROGRESS",
 			index: true,
 		},
 		// Team members

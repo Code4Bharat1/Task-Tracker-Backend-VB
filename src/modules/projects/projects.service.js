@@ -22,7 +22,7 @@ export const createProjectService = async ({ companyId, departmentId, userId, da
 	const {
 		name,
 		description,
-		status = "PLANNING",
+		status = "IN_PROGRESS",
 		managerIds = [],
 		testerIds = [],
 		developerIds = [],

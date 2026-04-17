@@ -28,11 +28,11 @@ router.get("/colleagues", verifyAccessToken, getColleagues);
 router.patch("/me", verifyAccessToken, updateMe);
 
 // admin + department_head scoped routes
-router.post("/", verifyAccessToken, verifyRole(["admin", "department_head"]), createUser);
-router.get("/", verifyAccessToken, verifyRole(["admin", "department_head"]), getUsers);
-router.get("/:id", verifyAccessToken, verifyRole(["admin", "department_head"]), getUserById);
-router.patch("/:id", verifyAccessToken, verifyRole(["admin", "department_head"]), updateUser);
-router.delete("/:id", verifyAccessToken, verifyRole(["admin", "department_head"]), deleteUser);
+router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), createUser);
+router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), getUsers);
+router.get("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), getUserById);
+router.patch("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), updateUser);
+router.delete("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), deleteUser);
 
 // Profile pic routes
 router.get("/:id/profile-pic", verifyAccessToken, getProfilePic);

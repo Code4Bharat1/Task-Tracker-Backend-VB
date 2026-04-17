@@ -20,6 +20,8 @@ const ALLOWED_UPDATE_FIELDS = [
 	"developerFinishedAt",
 	"testerStartedAt",
 	"testerFinishedAt",
+	"contributors",
+	"reviewers",
 ];
 
 // Create a task (Lead only)
@@ -118,6 +120,7 @@ export const getTasksService = async ({
 			.skip(skip)
 			.limit(limit)
 			.sort({ created_at: -1 })
+			.populate("projectId", "name")
 			.populate("contributors.userId", "name email")
 			.populate("reviewers.userId", "name email")
 			.populate("created_by", "name"),
@@ -147,6 +150,19 @@ export const updateTaskService = async ({ id, companyId, userId, data }) => {
 	for (const key of ALLOWED_UPDATE_FIELDS) {
 		if (data[key] !== undefined) updateData[key] = data[key];
 	}
+
+	// Normalize contributors/reviewers to { userId } shape
+	if (updateData.contributors !== undefined) {
+		updateData.contributors = updateData.contributors
+			.filter((id) => isValidId(id))
+			.map((id) => ({ userId: id }));
+	}
+	if (updateData.reviewers !== undefined) {
+		updateData.reviewers = updateData.reviewers
+			.filter((id) => isValidId(id))
+			.map((id) => ({ userId: id }));
+	}
+
 	if (!Object.keys(updateData).length)
 		throw Object.assign(new Error("No valid fields to update"), { statusCode: 400 });
 

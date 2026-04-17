@@ -11,6 +11,7 @@ const upload = multer({ storage });
 const ALLOWED_MIME_TYPES = new Set([
 	"application/pdf",
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+	"application/octet-stream", // fallback for some browsers sending PDFs
 ]);
 
 const ALLOWED_EXTENSIONS = new Set([".pdf", ".docx"]);
@@ -18,7 +19,7 @@ const ALLOWED_EXTENSIONS = new Set([".pdf", ".docx"]);
 const documentFileFilter = (req, file, cb) => {
 	const ext = "." + file.originalname.split(".").pop().toLowerCase();
 
-	if (!ALLOWED_MIME_TYPES.has(file.mimetype) || !ALLOWED_EXTENSIONS.has(ext)) {
+	if (!ALLOWED_EXTENSIONS.has(ext)) {
 		return cb(customError("Only .pdf and .docx files are allowed", 400), false);
 	}
 	cb(null, true);

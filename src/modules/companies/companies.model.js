@@ -56,6 +56,7 @@ const companySchema = new Schema(
 		// Role-based permission overrides (admin always has full access)
 		rolePermissions: {
 			department_head: { type: rolePermissionsSchema, default: () => ({}) },
+			lead:            { type: rolePermissionsSchema, default: () => ({}) },
 			employee:        { type: rolePermissionsSchema, default: () => ({}) },
 		},
 	},
