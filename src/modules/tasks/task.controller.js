@@ -6,6 +6,7 @@ import {
 	assignTaskService,
 	deleteTaskService,
 	advanceTaskStatusService,
+	startTesterReviewService,
 	uploadTaskAttachmentService,
 	deleteTaskAttachmentService,
 } from "./task.service.js";
@@ -88,13 +89,29 @@ export const deleteTask = async (req, res, next) => {
 	}
 };
 
+// Advance task status
 export const advanceTask = async (req, res, next) => {
 	try {
-		const { companyId } = req;
-		const task = await advanceTaskStatusService({ id: req.params.id, companyId });
-		res.status(200).json({ task });
-	} catch (err) {
-		next(err);
+		const task = await advanceTaskStatusService({
+			id: req.params.id,
+			companyId: req.companyId,
+		});
+		res.status(200).json(task);
+	} catch (error) {
+		next(error);
+	}
+};
+
+// Start tester review timing
+export const startTesterReview = async (req, res, next) => {
+	try {
+		const task = await startTesterReviewService({
+			id: req.params.id,
+			companyId: req.companyId,
+		});
+		res.status(200).json(task);
+	} catch (error) {
+		next(error);
 	}
 };
 

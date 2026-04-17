@@ -33,6 +33,36 @@ export const getBugsService = async ({ companyId, projectId, moduleId, status, s
   return { data, pagination: { total, page, pages: Math.ceil(total / limit), limit } };
 };
 
+export const getMyBugsService = async ({ companyId, userId, page = 1, limit = 20 }) => {
+  page = Math.max(1, Number(page) || 1);
+  limit = Math.min(100, Number(limit) || 20);
+  const skip = (page - 1) * limit;
+
+  const query = { companyId, assignedTo: userId };
+
+  const [data, total] = await Promise.all([
+    Bug.find(query).select("-__v").skip(skip).limit(limit).sort({ created_at: -1 }),
+    Bug.countDocuments(query),
+  ]);
+
+  return { data, pagination: { total, page, pages: Math.ceil(total / limit), limit } };
+};
+
+export const getBugsReportedByMeService = async ({ companyId, userId, page = 1, limit = 20 }) => {
+  page = Math.max(1, Number(page) || 1);
+  limit = Math.min(100, Number(limit) || 20);
+  const skip = (page - 1) * limit;
+
+  const query = { companyId, reportedBy: userId };
+
+  const [data, total] = await Promise.all([
+    Bug.find(query).select("-__v").skip(skip).limit(limit).sort({ created_at: -1 }),
+    Bug.countDocuments(query),
+  ]);
+
+  return { data, pagination: { total, page, pages: Math.ceil(total / limit), limit } };
+};
+
 export const getBugByIdService = async ({ id, companyId }) => {
   if (!isValidId(id)) throw Object.assign(new Error("Invalid bug ID"), { statusCode: 400 });
   const bug = await Bug.findOne({ _id: id, companyId }).select("-__v");

@@ -16,6 +16,10 @@ const ALLOWED_UPDATE_FIELDS = [
 	"deadline",
 	"startTime",
 	"endTime",
+	"developerStartedAt",
+	"developerFinishedAt",
+	"testerStartedAt",
+	"testerFinishedAt",
 ];
 
 // Create a task (Lead only)
@@ -194,7 +198,7 @@ export const deleteTaskService = async ({ id, companyId }) => {
 	return true;
 };
 
-const STATUS_SEQUENCE = ["TODO", "IN_PROGRESS", "IN_REVIEW", "DONE"];
+const STATUS_SEQUENCE = ["TODO", "IN_PROGRESS", "DONE"];
 
 // Advance task to the next status in the sequence
 export const advanceTaskStatusService = async ({ id, companyId }) => {
@@ -208,8 +212,17 @@ export const advanceTaskStatusService = async ({ id, companyId }) => {
 		throw Object.assign(new Error("Task is already at the final status"), { statusCode: 400 });
 	}
 
-	task.status = STATUS_SEQUENCE[currentIndex + 1];
-	if (task.status === "DONE") task.completedAt = new Date();
+	const nextStatus = STATUS_SEQUENCE[currentIndex + 1];
+
+	if (nextStatus === "IN_PROGRESS") {
+		task.developerStartedAt = new Date();
+	} else if (nextStatus === "DONE") {
+		task.developerFinishedAt = new Date();
+		task.testerFinishedAt = new Date(); // Log both as finished at the same time if no review step
+		task.completedAt = new Date();
+	}
+
+	task.status = nextStatus;
 	await task.save();
 
 	// Score on completion
@@ -219,6 +232,27 @@ export const advanceTaskStatusService = async ({ id, companyId }) => {
 		} catch {
 			/* non-blocking */
 		}
+	}
+
+	return task;
+};
+
+// Start tester review timing
+export const startTesterReviewService = async ({ id, companyId }) => {
+	if (!isValidId(id)) throw Object.assign(new Error("Invalid task ID"), { statusCode: 400 });
+
+	const task = await Task.findOne({ _id: id, companyId });
+	if (!task) throw Object.assign(new Error("Task not found"), { statusCode: 404 });
+
+	if (task.status !== "IN_REVIEW") {
+		throw Object.assign(new Error("Task must be in IN_REVIEW status to start review"), {
+			statusCode: 400,
+		});
+	}
+
+	if (!task.testerStartedAt) {
+		task.testerStartedAt = new Date();
+		await task.save();
 	}
 
 	return task;

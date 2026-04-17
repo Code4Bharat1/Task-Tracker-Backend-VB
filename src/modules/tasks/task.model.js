@@ -79,6 +79,22 @@ const taskSchema = new mongoose.Schema(
 			type: Date,
 			default: null,
 		},
+		developerStartedAt: {
+			type: Date,
+			default: null,
+		},
+		developerFinishedAt: {
+			type: Date,
+			default: null,
+		},
+		testerStartedAt: {
+			type: Date,
+			default: null,
+		},
+		testerFinishedAt: {
+			type: Date,
+			default: null,
+		},
 		attachments: [
 			{
 				url: { type: String, required: true },

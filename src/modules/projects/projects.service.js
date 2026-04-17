@@ -14,7 +14,8 @@ const ALLOWED_UPDATE_FIELDS = [
 	"managerIds",
 	"testerIds",
 	"developerIds",
-	"deadline",
+	"startDate",
+	"endDate",
 ];
 
 export const createProjectService = async ({ companyId, departmentId, userId, data }) => {
@@ -25,7 +26,8 @@ export const createProjectService = async ({ companyId, departmentId, userId, da
 		managerIds = [],
 		testerIds = [],
 		developerIds = [],
-		deadline,
+		startDate,
+		endDate,
 	} = data;
 
 	if (!name) throw new Error("Project name is required");
@@ -37,7 +39,8 @@ export const createProjectService = async ({ companyId, departmentId, userId, da
 		managerIds: [...new Set(managerIds)],
 		testerIds: [...new Set(testerIds)],
 		developerIds: [...new Set(developerIds)],
-		deadline,
+		startDate,
+		endDate,
 		companyId,
 		departmentId,
 		created_by: userId,

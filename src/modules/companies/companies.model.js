@@ -47,6 +47,8 @@ const companySchema = new Schema(
 			taskMissed: { type: Number, default: -5 },
 			dailyLogOnTime: { type: Number, default: 1 },
 			dailyLogMissed: { type: Number, default: -2 },
+			absentees: { type: Number, default: -5 },
+			discipline: { type: Number, default: -10 },
 		},
 	},
 	{

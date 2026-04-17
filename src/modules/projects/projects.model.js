@@ -55,7 +55,11 @@ const projectSchema = new mongoose.Schema(
 		managerIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 		testerIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 		developerIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-		deadline: {
+		startDate: {
+			type: Date,
+			default: null,
+		},
+		endDate: {
 			type: Date,
 			default: null,
 		},

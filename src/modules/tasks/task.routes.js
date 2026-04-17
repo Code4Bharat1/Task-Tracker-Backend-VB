@@ -9,6 +9,7 @@ import {
 	assignTask,
 	deleteTask,
 	advanceTask,
+	startTesterReview,
 	uploadTaskAttachment,
 	deleteTaskAttachment,
 } from "./task.controller.js";
@@ -16,11 +17,11 @@ import { uploadTaskFile } from "../../middlewares/upload.js";
 
 const router = Router();
 
-// Create a task — Lead only (admin, department_head, project_manager)
+// Create a task — Lead only (admin, department_head, employee)
 router.post(
 	"/",
 	verifyAccessToken,
-	verifyRole(["admin", "department_head", "project_manager"]),
+	verifyRole(["admin", "department_head", "employee"]),
 	createTask
 );
 
@@ -43,11 +44,19 @@ router.patch(
 	advanceTask
 );
 
+// Start tester review timing
+router.patch(
+	"/:id/start-review",
+	verifyAccessToken,
+	verifyRole(["admin", "department_head", "employee"]),
+	startTesterReview
+);
+
 // Assign contributors / reviewers — Lead only
 router.patch(
 	"/:id/assign",
 	verifyAccessToken,
-	verifyRole(["admin", "department_head", "project_manager"]),
+	verifyRole(["admin", "department_head", "employee"]),
 	assignTask
 );
 
@@ -55,7 +64,7 @@ router.patch(
 router.patch(
 	"/:id",
 	verifyAccessToken,
-	verifyRole(["admin", "department_head", "project_manager", "employee"]),
+	verifyRole(["admin", "department_head", "employee"]),
 	updateTask
 );
 
@@ -63,7 +72,7 @@ router.patch(
 router.delete(
 	"/:id",
 	verifyAccessToken,
-	verifyRole(["admin", "department_head", "project_manager"]),
+	verifyRole(["admin", "department_head", "employee"]),
 	deleteTask
 );
 
@@ -71,7 +80,7 @@ router.delete(
 router.post(
 	"/:id/attachments",
 	verifyAccessToken,
-	verifyRole(["admin", "department_head", "project_manager", "employee"]),
+	verifyRole(["admin", "department_head", "employee"]),
 	uploadTaskFile,
 	uploadTaskAttachment
 );
@@ -80,7 +89,7 @@ router.post(
 router.delete(
 	"/:id/attachments",
 	verifyAccessToken,
-	verifyRole(["admin", "department_head", "project_manager", "employee"]),
+	verifyRole(["admin", "department_head", "employee"]),
 	deleteTaskAttachment
 );
 
