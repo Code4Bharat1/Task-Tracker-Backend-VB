@@ -1,6 +1,7 @@
 import { Router } from "express";
 import verifyAccessToken from "../../middlewares/verifyAccessToken.middleware.js";
 import verifyRole from "../../middlewares/verifyRole.middleware.js";
+import verifyPermission from "../../middlewares/verifyPermission.middleware.js";
 import { uploadDocument } from "../../middlewares/upload.js";
 import {
   createKtDocument,
@@ -12,12 +13,11 @@ import {
 
 const router = Router();
 
-// Only department_head can create / update / delete
-// uploadDocument validates mime type, extension, and size (10 MB max)
 router.post(
   "/",
   verifyAccessToken,
   verifyRole("department_head"),
+  verifyPermission("ktDocuments", "create"),
   uploadDocument,
   createKtDocument
 );
@@ -26,6 +26,7 @@ router.get(
   "/",
   verifyAccessToken,
   verifyRole(["admin", "department_head", "employee"]),
+  verifyPermission("ktDocuments", "read"),
   getKtDocuments
 );
 
@@ -33,6 +34,7 @@ router.get(
   "/:id",
   verifyAccessToken,
   verifyRole(["admin", "department_head", "employee"]),
+  verifyPermission("ktDocuments", "read"),
   getKtDocumentById
 );
 
@@ -40,6 +42,7 @@ router.patch(
   "/:id",
   verifyAccessToken,
   verifyRole("department_head"),
+  verifyPermission("ktDocuments", "update"),
   uploadDocument,
   updateKtDocument
 );
@@ -48,6 +51,7 @@ router.delete(
   "/:id",
   verifyAccessToken,
   verifyRole("department_head"),
+  verifyPermission("ktDocuments", "delete"),
   deleteKtDocument
 );
 

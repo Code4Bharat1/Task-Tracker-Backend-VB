@@ -1,6 +1,7 @@
 import { Router } from "express";
 import verifyAccessToken from "../../middlewares/verifyAccessToken.middleware.js";
 import verifyRole from "../../middlewares/verifyRole.middleware.js";
+import verifyPermission from "../../middlewares/verifyPermission.middleware.js";
 import {
 	createReport,
 	getReports,
@@ -12,16 +13,16 @@ import {
 
 const router = Router();
 
-router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), createReport);
+router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("reports", "create"), createReport);
 
 // /my-reports MUST be before /:id
-router.get("/my-reports", verifyAccessToken, getMyReports);
+router.get("/my-reports", verifyAccessToken, verifyPermission("reports", "read"), getMyReports);
 
-router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), getReports);
-router.get("/:id", verifyAccessToken, getReportById);
+router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), verifyPermission("reports", "read"), getReports);
+router.get("/:id", verifyAccessToken, verifyPermission("reports", "read"), getReportById);
 
 // Any authenticated user can update/delete their own report (controller enforces ownership)
-router.patch("/:id", verifyAccessToken, updateReport);
-router.delete("/:id", verifyAccessToken, deleteReport);
+router.patch("/:id", verifyAccessToken, verifyPermission("reports", "update"), updateReport);
+router.delete("/:id", verifyAccessToken, verifyPermission("reports", "delete"), deleteReport);
 
 export default router;
