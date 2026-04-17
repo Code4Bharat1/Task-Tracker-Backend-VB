@@ -8,6 +8,9 @@ import {
 	deleteUser,
 	getAllUsers,
 	getColleagues,
+	uploadProfilePic,
+	getProfilePic,
+	deleteProfilePic,
 } from "./user.controller.js";
 import verifyAccessToken from "../../middlewares/verifyAccessToken.middleware.js";
 import verifyRole from "../../middlewares/verifyRole.middleware.js";
@@ -32,10 +35,8 @@ router.patch("/:id", verifyAccessToken, verifyRole(["admin", "department_head"])
 router.delete("/:id", verifyAccessToken, verifyRole(["admin", "department_head"]), deleteUser);
 
 // Profile pic routes
-// TO-DO
-// router.get("/:id/profile-pic", getProfilePic);
-// router.post("/:id/profile-pic", uploadProfilePicMiddleware, uploadProfilePic);
-// router.put("/:id/profile-pic", uploadProfilePicMiddleware, uploadProfilePic);
-// router.delete("/:id/profile-pic", deleteProfilePic);
+router.get("/:id/profile-pic", verifyAccessToken, getProfilePic);
+router.post("/:id/profile-pic", verifyAccessToken, uploadProfilePicMiddleware, uploadProfilePic);
+router.delete("/:id/profile-pic", verifyAccessToken, deleteProfilePic);
 
 export default router;

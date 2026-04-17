@@ -16,9 +16,9 @@ export const createBug = async (req, res, next) => {
 
 export const getBugs = async (req, res, next) => {
   try {
-    const { companyId } = req;
-    const { projectId, moduleId, status, severity, assignedTo, page, limit } = req.query;
-    const result = await getBugsService({ companyId, projectId, moduleId, status, severity, assignedTo, page, limit });
+    const { companyId, userId } = req;
+    const { projectId, moduleId, status, severity, assignedTo, assignedToMe, reportedByMe, page, limit } = req.query;
+    const result = await getBugsService({ companyId, projectId, moduleId, status, severity, assignedTo, assignedToMe, reportedByMe, requesterId: userId, page, limit });
     res.status(200).json(result);
   } catch (err) { next(err); }
 };

@@ -1,5 +1,24 @@
 import mongoose, { Schema } from "mongoose";
 
+const permissionSchema = new Schema({
+	create: { type: Boolean, default: true },
+	read:   { type: Boolean, default: true },
+	update: { type: Boolean, default: true },
+	delete: { type: Boolean, default: false },
+}, { _id: false });
+
+const rolePermissionsSchema = new Schema({
+	users:        { type: permissionSchema, default: () => ({}) },
+	projects:     { type: permissionSchema, default: () => ({}) },
+	tasks:        { type: permissionSchema, default: () => ({}) },
+	dailyLogs:    { type: permissionSchema, default: () => ({}) },
+	bugs:         { type: permissionSchema, default: () => ({}) },
+	reports:      { type: permissionSchema, default: () => ({}) },
+	ktDocuments:  { type: permissionSchema, default: () => ({}) },
+	leaderboard:  { type: permissionSchema, default: () => ({}) },
+	activityLogs: { type: permissionSchema, default: () => ({}) },
+}, { _id: false });
+
 const companySchema = new Schema(
 	{
 		companyName: {
@@ -8,7 +27,6 @@ const companySchema = new Schema(
 			trim: true,
 			index: true,
 		},
-
 		status: {
 			type: String,
 			enum: ["active", "inactive"],
@@ -20,40 +38,27 @@ const companySchema = new Schema(
 			enum: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
 			default: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
 		},
-		shiftStart: {
-			type: String, // "HH:MM" 24h format
-			default: "09:00",
-		},
-		shiftEnd: {
-			type: String,
-			default: "18:00",
-		},
-		logDeadlines: {
-			type: [String], // ["HH:MM"] 24h format
-			default: ["22:00"],
-		},
-		defaultTaskDeadline: {
-			type: String, // "HH:MM" 24h format — default deadline time for new tasks
-			default: "20:00",
-		},
-		missedTaskGracePeriod: {
-			type: Number, // hours after deadline before task is considered "missed"
-			default: 24,
-		},
+		shiftStart: { type: String, default: "09:00" },
+		shiftEnd:   { type: String, default: "18:00" },
+		logDeadlines: { type: [String], default: ["22:00"] },
+		defaultTaskDeadline: { type: String, default: "20:00" },
+		missedTaskGracePeriod: { type: Number, default: 24 },
 		scoringRules: {
-			taskOnTime: { type: Number, default: 2 },
-			taskEarly: { type: Number, default: 3 },
-			taskOverdue: { type: Number, default: -1 },
-			taskMissed: { type: Number, default: -5 },
+			taskOnTime:     { type: Number, default: 2 },
+			taskEarly:      { type: Number, default: 3 },
+			taskOverdue:    { type: Number, default: -1 },
+			taskMissed:     { type: Number, default: -5 },
 			dailyLogOnTime: { type: Number, default: 1 },
 			dailyLogMissed: { type: Number, default: -2 },
 		},
+		// Role-based permission overrides (admin always has full access)
+		rolePermissions: {
+			department_head: { type: rolePermissionsSchema, default: () => ({}) },
+			employee:        { type: rolePermissionsSchema, default: () => ({}) },
+		},
 	},
 	{
-		timestamps: {
-			createdAt: "created_at",
-			updatedAt: "updated_at",
-		},
+		timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
 		versionKey: false,
 	}
 );

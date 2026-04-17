@@ -130,6 +130,11 @@ export const updateUserAccount = async (id, companyId, departmentId, data) => {
 		if (data[key] !== undefined) updateData[key] = data[key];
 	}
 
+	// Coerce empty string departmentId to null so Mongoose doesn't try to cast "" as ObjectId
+	if (updateData.departmentId === "" || updateData.departmentId === null) {
+		updateData.departmentId = null;
+	}
+
 	// If the user is being set to admin/super_admin, remove any department association
 	if (updateData.globalRole === "admin" || updateData.globalRole === "super_admin") {
 		updateData.departmentId = null;

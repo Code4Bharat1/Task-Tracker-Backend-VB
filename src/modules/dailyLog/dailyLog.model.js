@@ -30,6 +30,10 @@ const entrySchema = new mongoose.Schema(
 			required: true,
 			trim: true,
 		},
+		screenshotUrl: {
+			type: String,
+			default: null,
+		},
 	},
 	{ _id: true, versionKey: false }
 );

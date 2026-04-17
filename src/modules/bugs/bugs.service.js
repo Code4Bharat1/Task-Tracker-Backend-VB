@@ -13,7 +13,7 @@ export const createBugService = async ({ companyId, userId, data }) => {
   return Bug.create({ companyId, projectId, moduleId, title, description, severity, assignedTo, stepsToReproduce, attachmentUrl, reportedBy: userId });
 };
 
-export const getBugsService = async ({ companyId, projectId, moduleId, status, severity, assignedTo, page = 1, limit = 20 }) => {
+export const getBugsService = async ({ companyId, projectId, moduleId, status, severity, assignedTo, assignedToMe, reportedByMe, requesterId, page = 1, limit = 20 }) => {
   page = Math.max(1, Number(page) || 1);
   limit = Math.min(100, Number(limit) || 20);
   const skip = (page - 1) * limit;
@@ -24,6 +24,8 @@ export const getBugsService = async ({ companyId, projectId, moduleId, status, s
   if (status) query.status = status;
   if (severity) query.severity = severity;
   if (assignedTo) query.assignedTo = assignedTo;
+  if (assignedToMe === "true" || assignedToMe === true) query.assignedTo = requesterId;
+  if (reportedByMe === "true" || reportedByMe === true) query.reportedBy = requesterId;
 
   const [data, total] = await Promise.all([
     Bug.find(query).select("-__v").skip(skip).limit(limit).sort({ created_at: -1 }),

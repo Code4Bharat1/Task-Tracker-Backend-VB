@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
+import { Readable } from "stream";
 import DailyLog from "./dailyLog.model.js";
 import Task from "../tasks/task.model.js";
+import cloudinary from "../../config/cloudinary.js";
 
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
@@ -140,4 +142,30 @@ export const deleteDailyLogService = async ({ id, companyId, role, requesterId }
 		throw Object.assign(new Error("Unauthorized"), { statusCode: 403 });
 	await log.deleteOne();
 	return true;
+};
+
+// POST /daily-logs/:id/entries/:entryId/screenshot — upload screenshot for a log entry
+export const uploadEntryScreenshotService = async ({ id, entryId, companyId, role, requesterId, file }) => {
+	if (!isValidId(id)) throw Object.assign(new Error("Invalid log ID"), { statusCode: 400 });
+	if (!file) throw Object.assign(new Error("No file provided"), { statusCode: 400 });
+
+	const log = await DailyLog.findOne({ _id: id, companyId });
+	if (!log) throw Object.assign(new Error("Daily log not found"), { statusCode: 404 });
+	if (role === "employee" && log.userId.toString() !== requesterId)
+		throw Object.assign(new Error("Unauthorized"), { statusCode: 403 });
+
+	const entry = log.entries.id(entryId);
+	if (!entry) throw Object.assign(new Error("Entry not found"), { statusCode: 404 });
+
+	const result = await new Promise((resolve, reject) => {
+		const stream = cloudinary.uploader.upload_stream(
+			{ folder: `daily-logs/${companyId}/${id}`, resource_type: "image" },
+			(err, res) => (err ? reject(err) : resolve(res))
+		);
+		Readable.from(file.buffer).pipe(stream);
+	});
+
+	entry.screenshotUrl = result.secure_url;
+	await log.save();
+	return log;
 };

@@ -65,3 +65,24 @@ export const deleteCompanyController = async (req, res, next) => {
 		next(error);
 	}
 };
+
+export const getRolePermissionsController = async (req, res, next) => {
+	try {
+		const company = await getCompanyById(req.companyId);
+		if (!company) return res.status(404).json({ error: "Company not found" });
+		res.status(200).json({ rolePermissions: company.rolePermissions ?? {} });
+	} catch (error) {
+		next(error);
+	}
+};
+
+export const updateRolePermissionsController = async (req, res, next) => {
+	try {
+		const { rolePermissions } = req.body;
+		if (!rolePermissions) return res.status(400).json({ error: "rolePermissions is required" });
+		const company = await updateCompany(req.companyId, { rolePermissions });
+		res.status(200).json({ message: "Permissions updated", rolePermissions: company.rolePermissions });
+	} catch (error) {
+		next(error);
+	}
+};

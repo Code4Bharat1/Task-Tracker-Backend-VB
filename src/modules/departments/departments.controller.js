@@ -37,9 +37,9 @@ export const getDepartmentById = async (req, res) => {
 	const companyId = req.companyId;
 	const id = req.params.id;
 	try {
-		const depaartment = await geetOneDepartment(companyId, id);
-		if (depaartment.error) return res.status(400).json({ error: depaartment.error });
-		return res.status(200).json({ depaartment });
+		const department = await geetOneDepartment(companyId, id);
+		if (department.error) return res.status(400).json({ error: department.error });
+		return res.status(200).json({ department });
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
