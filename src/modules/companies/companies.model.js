@@ -8,15 +8,15 @@ const permissionSchema = new Schema({
 }, { _id: false });
 
 const rolePermissionsSchema = new Schema({
-	users:        { type: permissionSchema, default: () => ({}) },
-	projects:     { type: permissionSchema, default: () => ({}) },
-	tasks:        { type: permissionSchema, default: () => ({}) },
-	dailyLogs:    { type: permissionSchema, default: () => ({}) },
-	bugs:         { type: permissionSchema, default: () => ({}) },
-	reports:      { type: permissionSchema, default: () => ({}) },
-	ktDocuments:  { type: permissionSchema, default: () => ({}) },
-	leaderboard:  { type: permissionSchema, default: () => ({}) },
-	activityLogs: { type: permissionSchema, default: () => ({}) },
+	users:        permissionSchema,
+	projects:     permissionSchema,
+	tasks:        permissionSchema,
+	dailyLogs:    permissionSchema,
+	bugs:         permissionSchema,
+	reports:      permissionSchema,
+	ktDocuments:  permissionSchema,
+	leaderboard:  permissionSchema,
+	activityLogs: permissionSchema,
 }, { _id: false });
 
 const companySchema = new Schema(

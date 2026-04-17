@@ -28,7 +28,7 @@ router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead
 router.get("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "read"), getTaskById);
 
 // Advance task to next status
-router.patch("/:id/advance", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), advanceTask);
+router.patch("/:id/advance", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), advanceTask);
 
 // Start tester review timing
 router.patch("/:id/start-review", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), startTesterReview);
