@@ -109,6 +109,7 @@ export const updateCompany = async (companyId, updateData) => {
 		"defaultTaskDeadline",
 		"missedTaskGracePeriod",
 		"scoringRules",
+		"rolePermissions",
 	];
 	const data = {};
 	for (const key of ALLOWED) {
