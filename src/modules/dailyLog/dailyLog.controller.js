@@ -17,9 +17,9 @@ export const createDailyLog = async (req, res, next) => {
 
 export const getDailyLogs = async (req, res, next) => {
   try {
-    const { companyId, userId: requesterId, role } = req;
+    const { companyId, userId: requesterId, role, departmentId } = req;
     const { userId, projectId, page, limit } = req.query;
-    const result = await getDailyLogsService({ companyId, userId, projectId, role, requesterId, page, limit });
+    const result = await getDailyLogsService({ companyId, departmentId, userId, projectId, role, requesterId, page, limit });
     res.status(200).json(result);
   } catch (err) { next(err); }
 };

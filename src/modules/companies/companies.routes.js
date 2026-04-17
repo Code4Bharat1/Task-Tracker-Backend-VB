@@ -16,8 +16,8 @@ const router = Router();
 router.post("/", registerCompanyController);
 router.get("/", getCompaniesController);
 
-// Role permissions — must be BEFORE /:id to avoid "permissions" being treated as an ID
-router.get("/permissions/roles", verifyAccessToken, verifyRole("admin"), getRolePermissionsController);
+// Role permissions — read: any authenticated user, write: admin only
+router.get("/permissions/roles", verifyAccessToken, getRolePermissionsController);
 router.patch("/permissions/roles", verifyAccessToken, verifyRole("admin"), updateRolePermissionsController);
 
 router.get("/:id", getCompanyByIdController);

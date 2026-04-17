@@ -13,13 +13,19 @@ export const createBugService = async ({ companyId, userId, data }) => {
   return Bug.create({ companyId, projectId, moduleId, title, description, severity, assignedTo, stepsToReproduce, attachmentUrl, reportedBy: userId });
 };
 
-export const getBugsService = async ({ companyId, projectId, moduleId, status, severity, assignedTo, assignedToMe, reportedByMe, requesterId, page = 1, limit = 20 }) => {
+export const getBugsService = async ({ companyId, departmentId, role, projectId, moduleId, status, severity, assignedTo, assignedToMe, reportedByMe, requesterId, page = 1, limit = 20 }) => {
   page = Math.max(1, Number(page) || 1);
   limit = Math.min(100, Number(limit) || 20);
   const skip = (page - 1) * limit;
 
   const query = { companyId };
-  if (projectId) query.projectId = projectId;
+  if (projectId) {
+    query.projectId = projectId;
+  } else if (role === "department_head" && departmentId) {
+    const Project = (await import("../projects/projects.model.js")).default;
+    const deptProjects = await Project.find({ companyId, departmentId }).select("_id").lean();
+    query.projectId = { $in: deptProjects.map((p) => p._id) };
+  }
   if (moduleId) query.moduleId = moduleId;
   if (status) query.status = status;
   if (severity) query.severity = severity;

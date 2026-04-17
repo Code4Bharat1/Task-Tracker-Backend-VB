@@ -84,6 +84,8 @@ export const createTaskService = async ({ companyId, userId, data }) => {
 // Get tasks with optional filters
 export const getTasksService = async ({
 	companyId,
+	departmentId,
+	role,
 	projectId,
 	status,
 	priority,
@@ -96,7 +98,14 @@ export const getTasksService = async ({
 	const skip = (page - 1) * limit;
 
 	const query = { companyId };
-	if (projectId) query.projectId = projectId;
+	if (projectId) {
+		query.projectId = projectId;
+	} else if (role === "department_head" && departmentId) {
+		// Scope to projects in this department only
+		const Project = (await import("../projects/projects.model.js")).default;
+		const deptProjects = await Project.find({ companyId, departmentId }).select("_id").lean();
+		query.projectId = { $in: deptProjects.map((p) => p._id) };
+	}
 	if (status) query.status = status;
 	if (priority) query.priority = priority;
 	if (assignedTo && isValidId(assignedTo)) {

@@ -51,6 +51,7 @@ export const createDailyLogService = async ({ companyId, userId, data }) => {
 // GET /daily-logs
 export const getDailyLogsService = async ({
 	companyId,
+	departmentId,
 	userId: filterUserId,
 	projectId,
 	role,
@@ -63,8 +64,17 @@ export const getDailyLogsService = async ({
 	const skip = (page - 1) * limit;
 
 	const query = { companyId };
-	if (role === "employee") query.userId = requesterId;
-	else if (filterUserId) query.userId = filterUserId;
+
+	if (role === "employee" || role === "lead") {
+		query.userId = requesterId;
+	} else if (filterUserId) {
+		query.userId = filterUserId;
+	} else if (role === "department_head" && departmentId) {
+		// Scope to users in this department
+		const User = (await import("../users/user.model.js")).default;
+		const deptUsers = await User.find({ companyId, departmentId }).select("_id").lean();
+		query.userId = { $in: deptUsers.map((u) => u._id) };
+	}
 
 	// Filter by projectId inside entries array
 	if (projectId) query["entries.projectId"] = new mongoose.Types.ObjectId(projectId);
