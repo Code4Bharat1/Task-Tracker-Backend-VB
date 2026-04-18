@@ -13,12 +13,12 @@ import {
 
 const router = Router();
 
-router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("reports", "create"), createReport);
+router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("reports", "create"), createReport);
 
 // /my-reports MUST be before /:id
 router.get("/my-reports", verifyAccessToken, verifyPermission("reports", "read"), getMyReports);
 
-router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), verifyPermission("reports", "read"), getReports);
+router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer"]), verifyPermission("reports", "read"), getReports);
 router.get("/:id", verifyAccessToken, verifyPermission("reports", "read"), getReportById);
 
 // Any authenticated user can update/delete their own report (controller enforces ownership)

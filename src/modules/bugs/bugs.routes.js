@@ -6,13 +6,13 @@ import { createBug, getBugs, getBugById, updateBug, deleteBug, getMyBugs, getBug
 
 const router = Router();
 
-router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("bugs", "create"), createBug);
+router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("bugs", "create"), createBug);
 // Specific routes BEFORE generic /:id
 router.get("/my-bugs", verifyAccessToken, getMyBugs);
 router.get("/reported-by-me", verifyAccessToken, getBugsReportedByMe);
-router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("bugs", "read"), getBugs);
-router.get("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("bugs", "read"), getBugById);
-router.patch("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("bugs", "update"), updateBug);
-router.delete("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), verifyPermission("bugs", "delete"), deleteBug);
+router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("bugs", "read"), getBugs);
+router.get("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("bugs", "read"), getBugById);
+router.patch("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("bugs", "update"), updateBug);
+router.delete("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer"]), verifyPermission("bugs", "delete"), deleteBug);
 
 export default router;

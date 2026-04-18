@@ -19,19 +19,19 @@ import { uploadDocument } from "../../middlewares/upload.js";
 
 const router = Router();
 
-router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), verifyPermission("projects", "create"), createProject);
-router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), verifyPermission("projects", "read"), getProjects);
+router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer"]), verifyPermission("projects", "create"), createProject);
+router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer"]), verifyPermission("projects", "read"), getProjects);
 router.get("/my-projects", verifyAccessToken, getMyProjects);
-router.patch("/:id/team", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), assignProjectTeam);
+router.patch("/:id/team", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer"]), assignProjectTeam);
 router.get("/:id", verifyAccessToken, verifyPermission("projects", "read"), getProjectById);
 router.patch("/:id", verifyAccessToken, verifyPermission("projects", "update"), updateProject);
 router.patch("/:id/testing-phases", verifyAccessToken, updateTestingPhase);
-router.delete("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), verifyPermission("projects", "delete"), deleteProject);
+router.delete("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer"]), verifyPermission("projects", "delete"), deleteProject);
 
 // SRS document routes
 router.get("/:id/srs", verifyAccessToken, getSrs);
-router.post("/:id/srs", verifyAccessToken, verifyRole(["department_head", "lead"]), uploadDocument, uploadSrs);
-router.put("/:id/srs", verifyAccessToken, verifyRole(["department_head", "lead"]), uploadDocument, uploadSrs);
-router.delete("/:id/srs", verifyAccessToken, verifyRole(["department_head", "lead"]), deleteSrs);
+router.post("/:id/srs", verifyAccessToken, verifyRole(["department_head", "lead", "contributor", "reviewer"]), uploadDocument, uploadSrs);
+router.put("/:id/srs", verifyAccessToken, verifyRole(["department_head", "lead", "contributor", "reviewer"]), uploadDocument, uploadSrs);
+router.delete("/:id/srs", verifyAccessToken, verifyRole(["department_head", "lead", "contributor", "reviewer"]), deleteSrs);
 
 export default router;
