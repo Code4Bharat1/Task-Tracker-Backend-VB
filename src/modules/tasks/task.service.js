@@ -22,6 +22,7 @@ const ALLOWED_UPDATE_FIELDS = [
 	"testerFinishedAt",
 	"contributors",
 	"reviewers",
+	"completedAt",
 ];
 
 // Create a task (Lead only)
@@ -166,7 +167,24 @@ export const updateTaskService = async ({ id, companyId, userId, data }) => {
 	if (!Object.keys(updateData).length)
 		throw Object.assign(new Error("No valid fields to update"), { statusCode: 400 });
 
-	if (updateData.status === "DONE") updateData.completedAt = new Date();
+	// If marking as DONE, verify the user is an assigned contributor (unless admin/lead/dept-head)
+	if (updateData.status === "DONE" && userId) {
+		const existingTask = await Task.findOne({ _id: id, companyId });
+		if (existingTask) {
+			const User = (await import("../users/user.model.js")).default;
+			const actor = await User.findById(userId).select("globalRole").lean();
+			const isPrivileged = actor && ["admin", "department_head", "lead", "super_admin"].includes(actor.globalRole);
+			if (!isPrivileged) {
+				const isContributor = (existingTask.contributors || []).some(
+					(c) => String(c.userId) === String(userId)
+				);
+				if (!isContributor) {
+					throw Object.assign(new Error("Only assigned contributors can mark this task as complete"), { statusCode: 403 });
+				}
+			}
+		}
+		updateData.completedAt = new Date();
+	}
 
 	const task = await Task.findOneAndUpdate({ _id: id, companyId }, updateData, {
 		new: true,

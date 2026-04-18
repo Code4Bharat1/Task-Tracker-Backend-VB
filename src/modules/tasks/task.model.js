@@ -113,6 +113,16 @@ const taskSchema = new mongoose.Schema(
 			type: Date,
 			default: null,
 		},
+		// Notes added by admin/dept-head/lead on completed tasks
+		notes: [
+			{
+				authorId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+				authorName: { type: String, default: "" },
+				text: { type: String, required: true },
+				createdAt: { type: Date, default: Date.now },
+				_id: false,
+			},
+		],
 		created_by: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",

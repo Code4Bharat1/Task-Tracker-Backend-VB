@@ -48,4 +48,20 @@ router.post("/:id/attachments", verifyAccessToken, verifyRole(["admin", "departm
 // Delete an attachment from a task
 router.delete("/:id/attachments", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("tasks", "update"), deleteTaskAttachment);
 
+// Add a note to a completed task (admin/dept-head/lead only)
+router.post("/:id/notes", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), async (req, res, next) => {
+	try {
+		const { text } = req.body;
+		if (!text?.trim()) return res.status(400).json({ error: "Note text is required" });
+		const Task = (await import("./task.model.js")).default;
+		const task = await Task.findOneAndUpdate(
+			{ _id: req.params.id, companyId: req.companyId },
+			{ $push: { notes: { authorId: req.userId, authorName: req.body.authorName || "", text: text.trim() } } },
+			{ new: true }
+		);
+		if (!task) return res.status(404).json({ error: "Task not found" });
+		res.status(200).json({ task });
+	} catch (err) { next(err); }
+});
+
 export default router;
