@@ -1,4 +1,8 @@
 import "dotenv/config";
+
+import dns from "node:dns/promises"
+dns.setServers(["1.1.1.1"])
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
