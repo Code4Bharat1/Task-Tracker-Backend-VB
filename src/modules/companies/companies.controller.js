@@ -5,6 +5,7 @@ import {
 	registerCompanyAndAdmin,
 	updateCompany,
 } from "./companies.service.js";
+import Company from "./companies.model.js";
 
 export const registerCompanyController = async (req, res, next) => {
 	try {
@@ -68,7 +69,13 @@ export const deleteCompanyController = async (req, res, next) => {
 
 export const getRolePermissionsController = async (req, res, next) => {
 	try {
-		const company = await getCompanyById(req.companyId);
+		// Use native MongoDB driver to bypass ALL Mongoose schema filtering
+		const db = Company.db.db;
+		const collection = db.collection("companies");
+		const company = await collection.findOne(
+			{ _id: new Company.base.Types.ObjectId(req.companyId) },
+			{ projection: { rolePermissions: 1 } }
+		);
 		if (!company) return res.status(404).json({ error: "Company not found" });
 		res.status(200).json({ rolePermissions: company.rolePermissions ?? {} });
 	} catch (error) {
@@ -80,8 +87,32 @@ export const updateRolePermissionsController = async (req, res, next) => {
 	try {
 		const { rolePermissions } = req.body;
 		if (!rolePermissions) return res.status(400).json({ error: "rolePermissions is required" });
-		const company = await updateCompany(req.companyId, { rolePermissions });
-		res.status(200).json({ message: "Permissions updated", rolePermissions: company.rolePermissions });
+
+		// Use native MongoDB driver to bypass ALL Mongoose schema filtering
+		const db = Company.db.db;
+		const collection = db.collection("companies");
+
+		const setPayload = {};
+		for (const [roleKey, resources] of Object.entries(rolePermissions)) {
+			for (const [resourceKey, actions] of Object.entries(resources)) {
+				for (const [action, value] of Object.entries(actions)) {
+					setPayload[`rolePermissions.${roleKey}.${resourceKey}.${action}`] = value;
+				}
+			}
+		}
+
+		await collection.updateOne(
+			{ _id: new Company.base.Types.ObjectId(req.companyId) },
+			{ $set: setPayload }
+		);
+
+		// Read back with native driver to confirm what was saved
+		const updated = await collection.findOne(
+			{ _id: new Company.base.Types.ObjectId(req.companyId) },
+			{ projection: { rolePermissions: 1 } }
+		);
+
+		res.status(200).json({ message: "Permissions updated", rolePermissions: updated?.rolePermissions ?? {} });
 	} catch (error) {
 		next(error);
 	}

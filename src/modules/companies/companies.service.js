@@ -122,7 +122,7 @@ export const updateCompany = async (companyId, updateData) => {
 		throw error;
 	}
 
-	return Company.findByIdAndUpdate(companyId, data, { new: true, runValidators: true });
+	return Company.findByIdAndUpdate(companyId, { $set: data }, { new: true, runValidators: false });
 };
 
 export const deleteCompany = async (companyId) => {

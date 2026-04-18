@@ -19,33 +19,33 @@ import { uploadTaskFile } from "../../middlewares/upload.js";
 const router = Router();
 
 // Create a task
-router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "create"), createTask);
+router.post("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("tasks", "create"), createTask);
 
 // Get all tasks
-router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "read"), getTasks);
+router.get("/", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("tasks", "read"), getTasks);
 
 // Get a single task by ID
-router.get("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "read"), getTaskById);
+router.get("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("tasks", "read"), getTaskById);
 
 // Advance task to next status
-router.patch("/:id/advance", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), advanceTask);
+router.patch("/:id/advance", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), advanceTask);
 
 // Start tester review timing
-router.patch("/:id/start-review", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), startTesterReview);
+router.patch("/:id/start-review", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("tasks", "update"), startTesterReview);
 
 // Assign contributors / reviewers
-router.patch("/:id/assign", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), assignTask);
+router.patch("/:id/assign", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("tasks", "update"), assignTask);
 
 // Update task fields
-router.patch("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), updateTask);
+router.patch("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("tasks", "update"), updateTask);
 
 // Delete a task
 router.delete("/:id", verifyAccessToken, verifyRole(["admin", "department_head", "lead"]), verifyPermission("tasks", "delete"), deleteTask);
 
 // Upload an attachment to a task
-router.post("/:id/attachments", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), uploadTaskFile, uploadTaskAttachment);
+router.post("/:id/attachments", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("tasks", "update"), uploadTaskFile, uploadTaskAttachment);
 
 // Delete an attachment from a task
-router.delete("/:id/attachments", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "employee"]), verifyPermission("tasks", "update"), deleteTaskAttachment);
+router.delete("/:id/attachments", verifyAccessToken, verifyRole(["admin", "department_head", "lead", "contributor", "reviewer", "employee"]), verifyPermission("tasks", "update"), deleteTaskAttachment);
 
 export default router;

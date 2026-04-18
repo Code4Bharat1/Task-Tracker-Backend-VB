@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema(
 		},
 		globalRole: {
 			type: String,
-			enum: ["admin", "department_head", "lead", "employee", "super_admin"],
+			enum: ["admin", "department_head", "lead", "contributor", "reviewer", "employee", "super_admin"],
 			default: "employee",
 			index: true,
 		},

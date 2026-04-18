@@ -129,7 +129,7 @@ export const checkMissedDeadlines = async () => {
  * Get leaderboard data for a department.
  */
 export const getLeaderboardService = async ({ companyId, departmentId, period }) => {
-	const query = { companyId, isActive: true, globalRole: "employee" };
+	const query = { companyId, isActive: true, globalRole: { $in: ["employee", "lead", "contributor", "reviewer"] } };
 	if (departmentId) query.departmentId = new mongoose.Types.ObjectId(departmentId);
 
 	const users = await User.find(query)

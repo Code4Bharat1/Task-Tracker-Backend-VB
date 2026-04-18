@@ -44,7 +44,7 @@ export const getUserAccounts = async ({
 
 	if (reqRole === "department_head") {
 		query.departmentId = departmentId;
-		query.globalRole = "employee";
+		query.globalRole = { $in: ["employee", "lead", "contributor", "reviewer"] };
 	}
 
 	if (reqRole === "admin") {
