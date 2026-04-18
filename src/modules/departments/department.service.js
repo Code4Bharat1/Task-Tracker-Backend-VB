@@ -10,31 +10,19 @@ export const createNewDepartmentAndDepartmentHead = async (
 	globalRole = "department_head",
 	companyId
 ) => {
-	try {
-		const session = await mongoose.startSession();
-		session.startTransaction();
-		const [departments] = await Department.create(
-			[
-				{
-					companyId,
-					departmentName,
-				},
-			],
-			{ session }
-		);
+	// Create department first
+	const department = await Department.create({ companyId, departmentName });
 
-		const user = await createUserAccount(
-			{ name, email, globalRole, departmentId: departments._id, companyId },
-			{ session }
-		);
+	// Create the department head user (email sent fire-and-forget inside createUserAccount)
+	const user = await createUserAccount({
+		name,
+		email,
+		globalRole,
+		departmentId: department._id,
+		companyId,
+	});
 
-		session.commitTransaction();
-		session.endSession();
-
-		return { departments, user };
-	} catch (error) {
-		throw error;
-	}
+	return { departments: department, user };
 };
 
 export const getAllDepartments = async (companyId, role, page = 1, limit = 10) => {

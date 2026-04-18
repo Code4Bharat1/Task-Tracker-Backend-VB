@@ -6,6 +6,7 @@ import {
 	updateCompany,
 } from "./companies.service.js";
 import Company from "./companies.model.js";
+import { invalidatePermissionCache } from "../../middlewares/verifyPermission.middleware.js";
 
 export const registerCompanyController = async (req, res, next) => {
 	try {
@@ -105,6 +106,9 @@ export const updateRolePermissionsController = async (req, res, next) => {
 			{ _id: new Company.base.Types.ObjectId(req.companyId) },
 			{ $set: setPayload }
 		);
+
+		// Invalidate the in-memory permission cache so changes take effect immediately
+		invalidatePermissionCache(req.companyId);
 
 		// Read back with native driver to confirm what was saved
 		const updated = await collection.findOne(

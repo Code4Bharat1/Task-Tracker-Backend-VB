@@ -51,11 +51,12 @@ export const registerCompanyAndAdmin = async (companyName, name, email) => {
 		);
 
 		await session.commitTransaction();
-		await sendEmail(
+		// Fire email without awaiting — don't block the response on SMTP
+		sendEmail(
 			email,
 			"Admin Account Created",
 			`<p>Your temporary password is: ${password}</p>`
-		);
+		).catch((err) => console.error("[sendEmail] Failed to send admin email:", err?.message));
 		return { company: newCompany, admin: newAdmin };
 	} catch (error) {
 		await session.abortTransaction();

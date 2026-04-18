@@ -213,6 +213,17 @@ export const assignTaskService = async ({ id, companyId, data }) => {
 	if (!contributors && !reviewers)
 		throw Object.assign(new Error("contributors or reviewers required"), { statusCode: 400 });
 
+	// Validate that no user is assigned to both contributors and reviewers
+	if (contributors && reviewers) {
+		const contributorIds = contributors.filter((uid) => isValidId(uid));
+		const reviewerIds = reviewers.filter((uid) => isValidId(uid));
+		const overlap = contributorIds.filter(id => reviewerIds.includes(id));
+		
+		if (overlap.length > 0) {
+			throw Object.assign(new Error("Users cannot be assigned as both contributors and reviewers"), { statusCode: 400 });
+		}
+	}
+
 	const updateData = {};
 
 	if (contributors !== undefined) {

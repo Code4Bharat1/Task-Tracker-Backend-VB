@@ -15,11 +15,12 @@ export const createUserAccount = async (data) => {
 		...payload,
 		passwordHash: hashPassword,
 	});
-	await sendEmail(
+	// Fire email without awaiting — don't block the response on SMTP
+	sendEmail(
 		data.email,
 		"Temporary Password",
 		`<p>Hi ${data.name},\n your temporary password is: ${password}. \n Please change your password after login.</p>`
-	);
+	).catch((err) => console.error("[sendEmail] Failed to send welcome email:", err?.message));
 	return user;
 };
 

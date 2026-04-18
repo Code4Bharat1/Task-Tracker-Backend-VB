@@ -36,7 +36,7 @@ export const createUser = async (req, res, next) => {
 			name,
 			email,
 			globalRole,
-			departmentId,
+			departmentId: req.body.departmentId || null,  // use the departmentId from the request body
 			companyId,
 			isActive,
 			behaviourScore,
